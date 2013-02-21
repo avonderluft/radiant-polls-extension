@@ -1,0 +1,83 @@
+The *Poll* extension, as its name implies, enables Web Polls for Radiant CMS.  
+
+h2. Usage
+
+h3. Viewing Polls
+
+The Poll tab appears under *Content*, to the right of Pages.  Clicking that tab takes you to the Polls Index view.  
+
+The default index view filter and sorting also includes pagination.
+
+h4. Index View Actions
+
+* Edit a Poll - click on the Poll Title
+* Remove a Poll - click 'Remove'.  You will see a warning page advising you that deletion is permanent.
+* Deactivate a Poll - click 'Deactivate'.  You will see a warning page advising you that the Poll will not be deleted, but it will be removed from all pages to which it is assigned.
+
+h3. Creating or Editing a Poll
+
+* To create a new Poll, click the New Poll button at the lower left of the Index page.
+* To edit an existing Poll, click the Poll thumbnail or name.
+
+h4. Poll Fields
+
+* Required fields are _Name_ and _Background Image_
+* You may optionally add _Description_, _Foreground Image_, _Link URL_, and _Image Style_
+* You may specify the target for the link as the default '_blank' for a new window, or '_top' for the same window
+
+h3. Assigning Polls to pages
+
+Use the 'Assigned Pages' control to add a Poll to specific page(s).  Assign a selection weight of 1-10 (1 is low, 10 is high).  1 is the default.  Statistically a Poll with a weight of 10 will appear approximately 10 times more often than a Poll with a weight of one.
+
+h4. Enabling Poll rotation on a page
+
+* On the Page edit screen for a specific page, check the "Enable Poll" checkbox.
+* If Polls have been assigned to this page, their thumbnails will be displayed after "Polls Assigned".  Each thumbnail is also a link to the Edit page for that Poll.
+* If no Polls have been assigned, then thumbnails from the inherited Polls will be displayed after "Polls Inherited".  These are also link to Poll-edit.
+
+h4. Disabling Poll rotation
+
+* Simply uncheck the "Enable Poll Rotation" checkbox on the Page edit screen.
+* You can leave all existing Poll assignments in place.  If you re-enable Poll rotation, these will all be in the rotation again.
+
+h3. Using the Radius tags to display your Polls
+
+In your Layout, Snippet, or Page, you use the <r:Poll> Radius tags to set up your rotating Polls.  
+
+Within the @<r:Poll>@ tag, you do need to prefix your tags, e.g. you can use @<r:background_image />@ instead of @<r:Poll:background_image />@
+
+h4. Simple Poll using a link
+
+Clicking on the Poll links to the link_url defined with the Poll.
+
+<pre><code>
+<div class="Poll_rotator"
+  <r:Poll>
+    <a href='<r:link_url />'> <img src='<r:background_image />'/> </a>
+  </r:Poll>
+</div>
+</code></pre>
+
+
+h4. Poll using a link, which will display Polls with foreground image, if present
+
+Note the that image style is applied to the foreground image.  This way you position the foreground image relative to the background image, e.g. by defining the Poll with image style "left: 100px" the foreground image is superimposed 100 pixel from the left border of the background image.
+
+<pre><code>
+<div class="Poll_rotator"
+  <r:Poll>
+    <r:if_foreground_image>
+      <div style="background: url(<r:background_image />) top left no-repeat;">  
+        <a href="<r:link_url />" target="<r:link_target/>">
+          <img src="<r:foreground_image />" alt="" style="<r:image_style />" />
+        </a>
+      </div>
+    </r:if_foreground_image>
+    <r:unless_foreground_image>
+      <a href="<r:link_url />" target="<r:link_target/>" >
+        <img src="<r:background_image />" alt="" />
+      </a>
+    </r:unless_foreground_image>
+  </r:Poll>
+</div>
+</code></pre>
