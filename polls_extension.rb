@@ -1,7 +1,8 @@
 class PollsExtension < Radiant::Extension
-  version '0.3.1'
+  
+  version "#{File.read(File.expand_path(File.dirname(__FILE__)) + '/VERSION')}"
   description 'Radiant gets polls.'
-  url 'http://github.com/nuex/radiant-polls-extension'
+  url 'https://github.com/avonderluft/radiant-polls-extension'
 
   def activate
     require_dependency 'application_controller'

@@ -1,3 +1,18 @@
+begin
+  require 'jeweler'
+  Jeweler::Tasks.new do |gem|
+    gem.name = "radiant-polls-extension"
+    gem.summary = %Q{Polls Extension for Radiant CMS}
+    gem.description = %Q{Enables polls on pages.}
+    gem.email = "avonderluft@avlux.net"
+    gem.homepage = "https://github.com/avonderluft/radiant-polls-extension"
+    gem.authors = ['Chase James','David Cato','Andrew vonderLuft']
+    gem.add_dependency 'radiant', ">=1.1.3"
+  end
+rescue LoadError
+  puts "Jeweler (or a dependency) not available. This is only required if you plan to package polls extension as a gem."
+end
+
 # I think this is the one that should be moved to the extension Rakefile templat
 
 # In rails 1.2, plugins aren't available in the path until they're loaded.
