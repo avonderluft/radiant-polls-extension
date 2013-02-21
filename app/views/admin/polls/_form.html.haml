@@ -1,0 +1,60 @@
+- first_new_form = @poll.new_record? && params[:poll].nil?
+- form_for [:admin, @poll], :html => {'data-onsubmit_status' => onsubmit_status(@poll)} do |f|
+  .form-area
+    #poll_form_area
+      %p.name
+        = f.label :title, t('polls_form.label.title')
+        = f.text_field :title, :class => 'textbox activate', :style => "width: 50%;"
+      %p.title
+        = f.label :poll_start_date, t('polls_form.label.start_date')
+        = f.text_field :start_date, :size => 15
+      %p.title
+        %label#options-title{:for => "polls_form.label.poll_options"} 
+        = t('polls_form.label.options')
+        #options
+          - if first_new_form
+            %p.option
+              %input{:name => "poll[option_attributes][][title]", :size => "30", :type => "text"}/
+          = render :partial => 'option', :collection => @poll.options
+        %p#add-option= link_to_function(t('polls_form.label.add_option'), "add_option('options');")
+        
+  = javascript_tag "document.observe('dom:loaded',initialize_page_view);"
+  - if first_new_form
+    = javascript_tag "$('poll_title').activate();"
+
+  %p.buttons{:style=>"clear: left"}
+    = save_model_button(@poll)
+    = save_model_and_continue_editing_button(@poll)
+    = t('or')
+    = link_to t('cancel'), admin_polls_url
+
+- content_for :page_css do
+  :sass
+    table.calendar
+      background: white
+      border: 1px solid black
+      th
+        background: #eee
+        text-align: center
+        color: black
+        font-weight: bold
+      td
+        background: white
+        border: 1px solid #eee
+        padding: 0 2px
+        text-align: center
+        &.today a
+          color: red !important
+        &.back, &.forward
+          background: #ddd
+      a
+        color: black
+        text-decoration: none
+      tbody tr
+        &:last-child td
+          border-bottom: 1px solid black
+        td
+          &:first-child
+            border-left: 1px solid black
+          &:last-child
+            border-right: 1px solid black
