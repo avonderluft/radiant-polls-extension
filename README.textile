@@ -88,6 +88,10 @@ Poll "archives" can also be listed, using pagination via the will_paginate plugi
     </r:each:poll>
     <r:pages />
   </r:polls>
+  
+h2. To do
+
+* the polls (archives) are not working in some instances
 
 h2. Note and Caveats
 
