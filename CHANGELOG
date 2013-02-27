@@ -1,3 +1,13 @@
+=== 1.0.0
+
+  * Radiant 1.1.x compatible
+  * use cookies instead of sessions to monitor poll responses
+  * does not automactically expire cache on poll pages
+  * switched views from erb to haml
+  * now using pagination built into Radiant
+  * added poll:id radius tag
+  * use radiant-cache_by_page-extension, in order to set shorter cache times on pages with polls
+
 === 0.3.2
 
   * added <r:poll:options:each:if_first/> and <r:poll:options:each:if_last/>

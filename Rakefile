@@ -3,11 +3,12 @@ begin
   Jeweler::Tasks.new do |gem|
     gem.name = "radiant-polls-extension"
     gem.summary = %Q{Polls Extension for Radiant CMS}
-    gem.description = %Q{Enables polls on pages.}
+    gem.description = %Q{Enables polls on pages. Uses cookies instead of sessions}
     gem.email = "avonderluft@avlux.net"
     gem.homepage = "https://github.com/avonderluft/radiant-polls-extension"
     gem.authors = ['Chase James','David Cato','Andrew vonderLuft']
     gem.add_dependency 'radiant', ">=1.1.3"
+    gem.add_dependency 'radiant-cache_by_page-extension', ">=1.0.2"
   end
 rescue LoadError
   puts "Jeweler (or a dependency) not available. This is only required if you plan to package polls extension as a gem."
@@ -71,21 +72,13 @@ namespace :spec do
     t.spec_files = FileList['spec/**/*_spec.rb']
   end
 
-  [:models, :controllers, :views, :helpers].each do |sub|
+  [:models, :controllers, :views, :helpers, :integration, :lib].each do |sub|
     desc "Run the specs under spec/#{sub}"
     Spec::Rake::SpecTask.new(sub) do |t|
       t.spec_opts = ['--options', "\"#{extension_root}/spec/spec.opts\""]
       t.spec_files = FileList["spec/#{sub}/**/*_spec.rb"]
     end
   end
-  
-  # Hopefully no one has written their extensions in pre-0.9 style
-  # desc "Translate specs from pre-0.9 to 0.9 style"
-  # task :translate do
-  #   translator = ::Spec::Translator.new
-  #   dir = RAILS_ROOT + '/spec'
-  #   translator.translate(dir, dir)
-  # end
 
   # Setup specs for stats
   task :statsetup do
