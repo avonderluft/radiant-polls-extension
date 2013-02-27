@@ -1,29 +1,47 @@
 require 'spec_helper'
 
-describe Page, "with polls", :type => :integration do
+describe Page, "with and without polls present" do
+  
   dataset :pages
 
   before :all do
+    FileUtils.chdir RAILS_ROOT
     @cache_dir = "#{RAILS_ROOT}/tmp/cache"
-    @cache_file = "#{@cache_dir}/_site-root.yml"
+    @cache_file = "#{@cache_dir}/meta/*/*"
+
   end
 
   before :each do
     @page = pages(:home)
-    ResponseCache.defaults[:directory] = @cache_dir
-    ResponseCache.defaults[:perform_caching] = true
-    ResponseCache.defaults[:expire_time] = 1.day
-    @cache = ResponseCache.instance
-    @cache.clear unless @cache.defaults[:directory] == '/'
+    @default = 1.day
+    SiteController.page_cache_directory = @cache_dir
+    SiteController.perform_caching = true
+    SiteController.cache_timeout = @default
+    @expire_mins = @default.to_i/60
+    @cache = Radiant::Cache
+    @cache.clear
+  end
+  
+  def page_is_cached(page)
+    if response.nil?
+      @cache.clear
+      false
+    else 
+      ! response.headers['Cache-Control'].include?('no-cache')
+    end
+  end
+
+  def cache_expires
+    Time.now + `cat #{@cache_file}`.split('max-age=')[1].split(',')[0].to_i rescue nil
   end
 
   describe "- fetch of page without a poll" do
-    it "should render the page and cache it with defaults" do
-      navigate_to @page.url
+    it "should render a page with default caching" do
+      get "#{@page.slug}"
       response.should be_success
       response.cache_timeout.should be_nil
-      @cache.response_cached?(@page.url).should be_true
-      YAML.load_file(@cache_file)['expires'].should be_close(@cache.defaults[:expire_time].from_now, 0.1)
+      page_is_cached(@page).should be_true
+      response.headers['Cache-Control'].should == "max-age=#{@default}, public"
     end
   end
     
@@ -41,24 +59,14 @@ describe Page, "with polls", :type => :integration do
         @part = PagePart.find_by_page_id_and_name(@page, 'body')
         @part.content += poll_tag
         @part.save
-        navigate_to @page.url
-        @first_cached_page_expire_date = YAML.load_file(@cache_file)['expires']
+        get "#{@page.slug}"
+        @first_cached_page_expire_time = cache_expires
       end
 
       it "should render the page and cache it with defaults" do
         response.should be_success
         response.cache_timeout.should be_nil
-        @cache.response_cached?(@page.url).should be_true
-        YAML.load_file(@cache_file)['expires'].should be_close(@cache.defaults[:expire_time].from_now, 0.1)
-      end
-
-      it "should expire the cached page on reload, and re-cache it, since it has a poll" do
-        navigate_to @page.url
-        response.should be_success
-        response.cache_timeout.should be_nil
-        response.body.include?(Poll.marker).should be_true
-        @cache.response_cached?(@page.url).should be_true
-        YAML.load_file(@cache_file)['expires'].should be > @first_cached_page_expire_date
+        cache_expires.should be_close(@expire_mins.minutes.from_now, 30)
       end
 
     end
