@@ -16,10 +16,10 @@ en:
       title: 'Title'
       start_date: 'Start Date'
       responses: 'Responses'
-    empty: 'You have not created any polls. Click <code>New Poll</code> below to get started.'
+    empty: 'You have not created any polls. Click <code>New Poll</code> below to create a new poll.'
     reset: 'Clear responses'
-    reset_confirm: 'Really clear poll responses?'
-    delete_confirm: 'Really delete this poll?'
+    reset_confirm: "Clear all responses for the poll '%{poll}' ?"
+    delete_confirm: "Permanently delete the poll '%{poll}' ?"
     results: 'Results'
   polls_controller:
-    responses_cleared: 'Responses for poll "{{poll}}" have been cleared.'
+    responses_cleared: "Responses have been cleared."

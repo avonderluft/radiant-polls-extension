@@ -1,4 +1,5 @@
 class Poll < ActiveRecord::Base
+  
   has_many :options
   after_update :save_options
   validates_presence_of :title
@@ -6,6 +7,8 @@ class Poll < ActiveRecord::Base
   validates_uniqueness_of :start_date, :allow_nil => true
   validates_associated :options
   before_create :set_defaults
+
+  def self.marker; "<!-- Polls Extension -->" end
 
   # Find the current poll. The current poll is defined as the poll that has the
   # latest start date that is no later than the current date. If no poll has a

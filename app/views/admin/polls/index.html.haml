@@ -1,51 +1,64 @@
 - @page_title = t('polls_index.title') + ' - ' + default_page_title
 .outset
+  = render_region :top
   %table.index#polls
     %thead
       %tr
-        %th.name= t('polls_index.column.title')
-        %th.date= t('polls_index.column.start_date')
-        %th.responses= t('polls_index.column.responses')
-        %th.actions{:colspan => 2}= t('modify')
+        - render_region :thead do |thead|
+          - thead.name_header do
+            %th.name= t('polls_index.column.title')
+          - thead.date_header do
+            %th.date= t('polls_index.column.start_date')
+          - thead.responses_header do
+            %th.responses= t('polls_index.column.responses')
+          - thead.actions_header do
+            %th.actions{:colspan => 2}= t('modify')
     %tbody
       - if @polls.any?
         - @polls.each do |poll|
           %tr[poll]
-            %td.name
-              = image('poll', :alt => '')
-              = link_to poll.title, edit_admin_poll_url(poll)
-            %td.date{:style=>"white-space:nowrap"}
-              = poll.start_date
-            %td.name#responses
-              - if poll.response_count > 0
-                %strong= link_to_function number_with_delimiter(poll.response_count), :title => "Show / Hide Results for this Poll" do |page| page.visual_effect :toggle_blind, "poll_#{poll.id}_results" end
-              - else
-                %span.none= poll.response_count
-            %td.actions
-              - if poll.response_count > 0
-                = link_to image('recycle') + ' ' + t('clear_responses'), clear_responses_admin_poll_url(poll), :method => :post, :confirm => "Clear all poll responses for '#{poll.title}'?", :class => "action"
-            %td.actions
-              = link_to image('minus') + ' ' + t('remove'), admin_poll_url(poll), :method => :delete, :confirm => t('polls_index.delete_confirm'), :class => "action"
+            - render_region :tbody, :locals => {:poll => poll} do |tbody|
+              - tbody.name_cell do
+                %td.name
+                  = image('poll', :alt => '')
+                  = link_to poll.title, edit_admin_poll_url(poll)
+              - tbody.date_cell do
+                %td.date{:style=>"white-space:nowrap"}
+                  = poll.start_date
+              - tbody.responses_cell do
+                %td.name#responses
+                  - if poll.response_count > 0
+                    %strong= link_to_function number_with_delimiter(poll.response_count), :title => "Show / Hide Results for this Poll" do |page| page.visual_effect :toggle_blind, "poll_#{poll.id}_results" end
+                  - else
+                    %span.none= poll.response_count
+              - tbody.actions_cell do
+                %td.actions
+                  - if poll.response_count > 0
+                    = link_to image('recycle') + ' ' + t('polls_index.reset'), clear_responses_admin_poll_url(poll), :method => :post, :confirm => t('polls_index.reset_confirm', :poll => poll.title), :class => "action"
+                %td.actions
+                  = link_to image('minus') + ' ' + t('remove'), admin_poll_url(poll), :method => :delete, :confirm => t('polls_index.delete_confirm', :poll => poll.title), :class => "action"
                 
-            - if poll.response_count > 0
-              %tr
-                %td.blank
-                %td{:colspan => 4}
-                  .results{:id => "poll_#{poll.id}_results", :style => "align:right;display: none;"}
-                    %strong Results
-                    %table
-                      - poll.options.sort{|a,b| b.response_count <=> a.response_count}.each do |option|
-                        %tr
-                          %td
-                            %strong= option.title
-                          %td= option.response_count
+                - if poll.response_count > 0
+                  %tr
+                    %td.blank
+                    %td{:colspan => 4}
+                      .results{:id => "poll_#{poll.id}_results", :style => "align:right;display: none;"}
+                        %strong Results
+                        %table
+                          - poll.options.sort{|a,b| b.response_count <=> a.response_count}.each do |option|
+                            %tr
+                              %td
+                                %strong= option.title
+                              %td= option.response_count
       - else
-        %td.empty{:colspan => 4}= t('no_polls')
+        %td.empty{:colspan => admin.poll.index.tbody.length}= t('polls_index.empty')
 
-#actions
-  = pagination_for(@polls)
-  %ul
-    %li= link_to image('plus') + " " + t('polls_action.new'), new_admin_poll_url, :class => 'action_button'
+- render_region :bottom do |bottom|
+  - bottom.new_button do
+    #actions
+      = pagination_for(@polls)
+      %ul
+        %li= link_to image('plus') + " " + t('polls_action.new'), new_admin_poll_url, :class => 'action_button'
 
 - content_for :page_css do
   :sass

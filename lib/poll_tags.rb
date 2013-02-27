@@ -40,10 +40,9 @@ module PollTags
   }
   tag 'poll' do |tag|
     options = tag.attr.dup
-    tag.locals.page.cache = false
     if Poll.count > 0
       tag.locals.poll = find_poll(tag, options)
-      tag.expand
+      tag.expand.blank? ? tag.expand : Poll.marker + tag.expand
     else
       'No polls found'
     end
@@ -73,6 +72,16 @@ module PollTags
     options = tag.attr.dup
     poll = tag.locals.poll = find_poll(tag, options)
     tag.expand if tag.locals.page.submitted_polls && tag.locals.page.submitted_polls.include?(poll.id)
+  end
+
+  desc %{
+    Shows the poll id.
+
+    *Usage:*
+    <pre><code><r:poll [title="My Poll"]><r:id /></r:poll></code></pre>
+  }
+  tag 'poll:id' do |tag|
+    tag.locals.poll.id
   end
 
   desc %{
@@ -280,9 +289,8 @@ module PollTags
   tag 'polls' do |tag|
     if Poll.count > 0
       options = find_options(tag)
-
       tag.locals.paginated_polls = Poll.paginate(options)
-      tag.expand
+      tag.expand.blank? ? tag.expand : Poll.marker + tag.expand
     else
       'No polls found'
     end
